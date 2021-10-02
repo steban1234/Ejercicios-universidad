@@ -179,9 +179,9 @@ def exportar_informacion(lista_datos):
             if validador:
                 opcion = int(input("Ya existe un archivo con ese nombre ("+ nombre_archivo +")" + "\n¿Quiere actualizarlo?\n1. Si\n2. No\n"))
                 if opcion == 1:
-                    print("===Archivo actualizado correctamente===\n\n")
+                    print("=== Archivo actualizado correctamente ===\n\n")
                 else:
-                    print("===Escriba un nombre diferente===\n\n")
+                    print("=== Escriba un nombre diferente ===\n\n")
                     iterador = 0
     workbook = xlsxwriter.Workbook('./archivos exportados/' + nombre_archivo + '.xlsx')
     worksheet = workbook.add_worksheet("Ajuste poligonal")
