@@ -1,5 +1,6 @@
 # Este programa calcula y ajusta una poligonal por los metodos de brujula y transito
 import math
+from tkinter.constants import S, X, Y
 import pandas as pd
 import xlsxwriter
 import numpy as np
@@ -65,6 +66,7 @@ def sumatoria_teorica (n_lados, tipo_angulo):
     return sumatoria_teorica
 
 
+
 def sumar_lista(lista):
     """suma un conjunto de valores en una lista
     """
@@ -114,8 +116,8 @@ def calcular_caz(acimuth, angulo_obs, lista_caz):
     return lista_caz
 
 def calc_proyecciones_E(lista_distancias, lista_acimu):
-    proy_E = [(x * (math.sin(math.radians(y)))) for x, y in zip_longest(lista_distancias, lista_acimu,  fillvalue=0)]
-    
+    proy_E = [(x * (math.sin(math.radians(y)))) for x, y in zip_longest(lista_distancias, lista_acimu,fillvalue=0)]
+
     return proy_E
 
 def suma_proyE(lista_distancias, lista_acimut):
@@ -125,16 +127,34 @@ def suma_proyE(lista_distancias, lista_acimut):
     return suma_proyE
 
 def calc_proyecciones_N(lista_distancias, lista_acimu):
-    proy_N = [x * (math.cos(math.radians(y))) for x, y in zip_longest(lista_distancias, lista_acimu,  fillvalue=0)]
+    proy_N = [x * (math.cos(math.radians(y))) for x, y in zip_longest(lista_distancias, lista_acimu,fillvalue=0)]
     
     return proy_N 
 
 def suma_proyN(lista_distancias, lista_acimut):
     proy_N = [x * (math.cos(math.radians(y))) for x, y in zip_longest(lista_distancias, lista_acimut,  fillvalue=0)]
     suma_proyN = sumar_lista(proy_N)
+    print("Valor de la variable suma_proyN: ", suma_proyN)
+
 
     return suma_proyN
 
+def cal_coordenadas(lista_ProyCorreg, lista_resultado, coordenada):
+    iterador = 0
+    calc = 0
+    while(iterador < lista_ProyCorreg.__len__()):
+        
+        if iterador == 0:
+            calc = (coordenada + lista_ProyCorreg[iterador])
+        else:
+
+            calc = (calc + lista_ProyCorreg[iterador])
+
+        lista_resultado.append(calc)
+
+        iterador += 1
+
+    return lista_resultado
 
 
 def traverse():
@@ -178,7 +198,8 @@ def traverse():
     for angulo in angulos:
         angulo_dec.append(angle_to_dec(angulo))
 
-    
+    #sumatoria distancias
+    sum_distancias = sumar_lista(distancias)
     
     # Sumatoria real, de los angulos observados en decimal    
     sum_real = sumar_lista(angulo_dec)
@@ -212,19 +233,55 @@ def traverse():
     #     calc_brujula()
     # else:
     #     print("Ingrese una opción válida!")
-    
-    #Proyecciones
-    Proy_Norte = []
-    Proy_N = (calc_proyecciones_N(distancias, Acimut))
-    Proy_Norte.append(Proy_N)
-
    
 
-    Proy_Este = []
-    Proy_E = (calc_proyecciones_E(distancias, Acimut))
-    Proy_Este.append(Proy_E)
+    #Proyecciones
+    Proy_NS = calc_proyecciones_N(distancias, Acimut)
+    sum_proynorte = sumar_lista(Proy_NS)
+
+    Proy_EW = calc_proyecciones_E(distancias, Acimut)
+    sum_proyeste = sumar_lista(Proy_EW)
+
+
+
+
+
+    #correciones de proyecciones
+
+    corr_proyN =[]
+
+    for dist in distancias:
+        corr_proyN.append((- sum_proynorte) / sum_distancias * dist)
+
+    suma_corr_proyN = sumar_lista(corr_proyN)
+    
+
+    corr_proyE =[]
+    for dist in distancias:
+        corr_proyE.append((- sum_proyeste) / sum_distancias * dist)
+
+    suma_corr_proyE = sumar_lista(corr_proyE)
+
+    #Proyecciones ya corregidas:
+
+    Proy_NScorr = [(x + y) for x, y in zip_longest(Proy_NS, corr_proyN,  fillvalue=0)]
 
     
+    Proy_EWcorr = [(x + y) for x, y in zip_longest(Proy_EW, corr_proyE,  fillvalue=0)]
+
+    
+    #coordenadas finales
+
+    coordenadas_N = []
+
+    coordenadas_N = cal_coordenadas(Proy_NScorr, coordenadas_N, y1)
+    # print("Lista de resultados: ",coordenadas_N)
+    # input("stop")
+    coordenadas_E = []
+
+    coordenadas_E = cal_coordenadas(Proy_EWcorr, coordenadas_E, x1)
+
+
 
     print()
     print('la sumatoria teorica es',format(sum_teorica))
@@ -235,8 +292,19 @@ def traverse():
     print()
     print('la correcion angular de la poligonal es',format(corr_ang))
     print()
-    print(estaciones, angulos, distancias, angulo_dec, angulo_dec_corr, Acimut, Proy_Norte, Proy_Este)
+    print(estaciones, angulos, distancias, angulo_dec, angulo_dec_corr, Acimut, Proy_NS, Proy_EW, corr_proyN, Proy_NScorr, Proy_EWcorr, coordenadas_N, coordenadas_E)
+    print()
+    print("la suma de las distancias es: ",sum_distancias)
+    print()
+    print("la suma de las proyecciones NS es: ",sum_proynorte)
+    print()
+    print("la suma de las proyecciones EW es: ",sum_proyeste)
+    print()
+    print("la suma de las correciones proyecciones NS es: ",suma_corr_proyN)
+    print()
+    print("la suma de las correciones proyecciones EW es: ",suma_corr_proyE)
     
+
 
 
 if __name__ == '__main__':
