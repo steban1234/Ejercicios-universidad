@@ -158,25 +158,35 @@ def cal_coordenadas(lista_ProyCorreg, lista_resultado, coordenada):
 
     return lista_resultado
 
-def exportar_informacion(lista_datos):
-
-    #se crea el archivo
-    nombre_archivo = input("Nombre del archivo: ")
-
+def validador_archivo(nombre_archivo):
     validacion = os.path.isfile('./' + nombre_archivo + '.xlsx')
+    return validacion
 
-    if validacion:
-        
-        while len(nombre_archivo) <= 0:
+def exportar_informacion(lista_datos):
+    
+    #validando si el archivo con el nombre asignado existe
+    iterador = 0
+    while iterador == 0:
+        nombre_archivo = input("Ingrese el nombre del archivo: ")
+        if(len(nombre_archivo) > 0):
+            iterador += 1
+        validador = validador_archivo(nombre_archivo)
+        if validador:
             nombre_archivo = input("Ya existe un archivo con ese nombre, digite un nuevo nombre: ")
-
-        workbook = xlsxwriter.Workbook('./' + nombre_archivo + '.xlsx')
-    else:
-        workbook = xlsxwriter.Workbook('./' + nombre_archivo + '.xlsx')
-
+            if(len(nombre_archivo) > 0):
+                iterador += 1
+            validador = validador_archivo(nombre_archivo)
+            if validador:
+                opcion = int(input("Ya existe un archivo con ese nombre ("+ nombre_archivo +")" + "\n¿Quiere actualizarlo?\n1. Si\n2. No\n"))
+                if opcion == 1:
+                    print("===Archivo actualizado correctamente===\n\n")
+                else:
+                    print("===Escriba un nombre diferente===\n\n")
+                    iterador = 0
+    workbook = xlsxwriter.Workbook('./archivos exportados/' + nombre_archivo + '.xlsx')
     worksheet = workbook.add_worksheet("Ajuste poligonal")
     workbook.close()
-    
+
 
     #escribimos la informacion en el archivo
     df = pd.DataFrame(lista_datos, columns = [
@@ -365,6 +375,6 @@ def traverse():
 
 if __name__ == '__main__':
     traverse()
-    input("\t\t\n====================================\nPulse cualquier cualquier tecla para salir")
+    input("\t\t\n====================================\nPulse cualquier cualquier tecla para salir\n")
 
 
