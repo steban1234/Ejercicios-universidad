@@ -6,6 +6,8 @@ import xlsxwriter
 import numpy as np
 from tkinter import filedialog
 from itertools import zip_longest
+import os
+
 
 
 def angle_to_dec(angulo):
@@ -156,6 +158,53 @@ def cal_coordenadas(lista_ProyCorreg, lista_resultado, coordenada):
 
     return lista_resultado
 
+def exportar_informacion(lista_datos):
+
+    #se crea el archivo
+    nombre_archivo = input("Nombre del archivo: ")
+
+    validacion = os.path.isfile('./' + nombre_archivo + '.xlsx')
+
+    if validacion:
+        
+        while len(nombre_archivo) <= 0:
+            nombre_archivo = input("Ya existe un archivo con ese nombre, digite un nuevo nombre: ")
+
+        workbook = xlsxwriter.Workbook('./' + nombre_archivo + '.xlsx')
+    else:
+        workbook = xlsxwriter.Workbook('./' + nombre_archivo + '.xlsx')
+
+    worksheet = workbook.add_worksheet("Ajuste poligonal")
+    workbook.close()
+    
+
+    #escribimos la informacion en el archivo
+    df = pd.DataFrame(lista_datos, columns = [
+            'Estaciones',
+            'Angulos',
+            'Distancias',  
+            'Angulos decimales',
+            'Angulos decimales corregidos',
+            'Acimut',
+            'Proyecciones N/S',
+            'Proyecciones E/W',
+            'Correcciones de proyeccion N',
+            'Correcciones de proyeccion S',
+            'Proyecciones N/S corregida',
+            'Proyecciones E/W corregida',
+            'Coordenadas N',
+            'Coordenadas E',
+    ])
+
+    df.to_excel ('./' + nombre_archivo + '.xlsx', index = False, header=True)
+
+def import_data():
+    input_path = filedialog.askopenfile(
+        title="Importar archivo",
+        filetypes=(("Archivos de excel", "*.xlsx"), ("Todo los archivos", "*.*"))
+    )
+    return input_path.name
+   
 
 def traverse():
     # solicitar las coordenadas en pantalla
@@ -180,11 +229,9 @@ def traverse():
     # importando cartera de excel
 
     #input_path = r"C:\TEC. LEV TOPOGRAFICOS\2DO SEMESTRE\LOGICA PROGRAMACION\poligonal_cerrada.xlsx"
-    input_path = filedialog.askopenfile(
-        title="Importar archivo",
-        filetypes=(("Archivos de excel", "*.xlsx"), ("Todo los archivos", "*.*"))
-    )
-    traverse_date = pd.read_excel(input_path.name)
+    
+    url_file = import_data()
+    traverse_date = pd.read_excel(url_file)
 
     # conviertiendo en lista 
     estaciones = list(traverse_date["STATION"])
@@ -224,25 +271,13 @@ def traverse():
     for c_az in Contracimut:
         Acimut.append(contraAcimuth(c_az))
 
-    #Elegir ajuste: (Brujula o tránsito)
-    # metodoCalc = int(input("Método de ajuste: \n1. Brujula\n2.Transito\n"))
-
-    # if(metodoCalc == 1):
-    #     print("metodo transito")
-    # elif(metodoCalc == 2):
-    #     calc_brujula()
-    # else:
-    #     print("Ingrese una opción válida!")
    
-
     #Proyecciones
     Proy_NS = calc_proyecciones_N(distancias, Acimut)
     sum_proynorte = sumar_lista(Proy_NS)
 
     Proy_EW = calc_proyecciones_E(distancias, Acimut)
     sum_proyeste = sumar_lista(Proy_EW)
-
-
 
 
 
@@ -292,7 +327,7 @@ def traverse():
     print()
     print('la correcion angular de la poligonal es',format(corr_ang))
     print()
-    print(estaciones, angulos, distancias, angulo_dec, angulo_dec_corr, Acimut, Proy_NS, Proy_EW, corr_proyN, Proy_NScorr, Proy_EWcorr, coordenadas_N, coordenadas_E)
+    print(estaciones, angulos, distancias, angulo_dec, angulo_dec_corr, Acimut, Proy_NS, Proy_EW, corr_proyN, corr_proyE, Proy_NScorr, Proy_EWcorr, coordenadas_N, coordenadas_E)
     print()
     print("la suma de las distancias es: ",sum_distancias)
     print()
@@ -304,8 +339,29 @@ def traverse():
     print()
     print("la suma de las correciones proyecciones EW es: ",suma_corr_proyE)
     
+    opcion_exportar = int(input("¿Quiere exportar los resultados?\n1. Si\n2. No\n"))
 
+    if(opcion_exportar == 1):
+        data = {
+            'Estaciones':  estaciones,
+            'Angulos': angulos,
+            'Distancias': distancias,  
+            'Angulos decimales': angulo_dec,
+            'Angulos decimales corregidos': angulo_dec_corr,
+            'Acimut': Acimut,
+            'Proyecciones N/S': Proy_NS,
+            'Proyecciones E/W': Proy_EW,
+            'Correcciones de proyeccion N': corr_proyN,
+            'Correcciones de proyeccion S': corr_proyE,
+            'Proyecciones N/S corregida': Proy_NScorr,
+            'Proyecciones E/W corregida': Proy_EWcorr,
+            'Coordenadas N': coordenadas_N,
+            'Coordenadas E': coordenadas_E,
+        }
+        exportar_informacion(data)
 
+    else:
+        print("Gracias por usar nuestros servicios.")
 
 if __name__ == '__main__':
     traverse()

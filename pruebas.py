@@ -1,4 +1,4 @@
-# # # def sumatoria_teorica ():
+""" # # # def sumatoria_teorica ():
 # # #     # solicitar numero de lados de la poligonal y que tipo de angulo observo
 
 # # #     n_lados = float(input('Digite numero de lados de la poligonal:'))
@@ -117,8 +117,8 @@
 #     acimuth_ = (acimuth_ + 180)
 
 def sumar_lista(lista):
-    """suma un conjunto de valores en una lista
-    """
+    suma un conjunto de valores en una lista
+   
     suma = 0
 
     for numero in lista:
@@ -231,4 +231,55 @@ coordenada_N_ini = 100107.980
 coor_N1 = (coordenada_N_ini + proy_Ncorr[0])
 
 print()
-print("coordenada n1: %.3f" %coor_N1)
+print("coordenada n1: %.3f" %coor_N1) """
+import pandas as pd
+from tkinter import filedialog
+import xlsxwriter
+from xlsxwriter import workbook
+from xlsxwriter import worksheet
+
+
+
+""" 
+input_path = filedialog.askopenfile(
+        title="Importar archivo",
+        filetypes=(("Archivos de excel", "*.xlsx"), ("Todo los archivos", "*.*"))
+    )
+traverse_date = pd.read_excel(input_path.name) """
+
+""" def crear_archivo(nombre_archivo, tipo_archivo):
+
+    workbook = xlsxwriter.Workbook('./' + nombre_archivo + tipo_archivo)
+    worksheet = workbook.add_worksheet("Ajuste poligonal")
+    
+    workbook.close()
+
+    data = {
+            'estaciones': [3455, 3453, 345],
+            'angulos':  [3455, 3453, 345],
+            'distancias':  [3455, 3453, 345],  
+            'angulos_decimales':  [3455, 3453, 345],
+            'angulos_decimales_corregidos':  [3455, 3453, 345],
+            'acimut':  [3455, 3453, 345],
+            'proyecciones_N/S': [3455, 3453, 345],
+            'proyecciones_E/W': [3455, 3453, 345],
+            'correcciones_de_proyeccion N': [3455, 3453, 345],
+            'correcciones_de_proyeccion S': [3455, 3453, 345],
+            'proyecciones_N/S_corregida': [3455, 3453, 345],
+            'proyecciones_E/W_corregida': [3455, 3453, 345],
+            'coordenadas_N': [3455, 3453, 345],
+            'coordenadas_E': [3455, 3453, 345],
+        }
+    
+ """
+
+
+#crear_archivo("adrian", ".xlsx")
+
+""" data = {'Product': ['Desktop Computer','Printer','Tablet','Monitor'],
+        'Price': [1200,150,300,450]
+        }
+
+df = pd.DataFrame(data, columns = ['Product', 'Price'])
+
+df.to_excel (input_path.name, index = False, header=True) """
