@@ -159,7 +159,7 @@ def cal_coordenadas(lista_ProyCorreg, lista_resultado, coordenada):
     return lista_resultado
 
 def validador_archivo(nombre_archivo):
-    validacion = os.path.isfile('./' + nombre_archivo + '.xlsx')
+    validacion = os.path.isfile('./archivos exportados/' + nombre_archivo + '.xlsx')
     return validacion
 
 def exportar_informacion(lista_datos):
